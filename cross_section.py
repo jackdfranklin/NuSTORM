@@ -22,40 +22,40 @@ class Cross_Section:
             "Cross Section":"cm^2 nucleus^-1"
         } 
 
-    def total_cross_section(self, energy):
+    def total_cross_section(self, nu_energy):
         '''Returns the total cross section (CC + NC) at the given energy
 
         Parameters
         ----------
-        energy: float or numpy.ndarray
-                The energy or energies that the cross section will be evaluated at
+        nu_energy: float or numpy.ndarray
+                The neutrino energy or energies that the cross section will be evaluated at
         
         Returns
         -------
         cross_section: float or numpy.ndarray
         '''
-        return self.interp_CC(energy) + self.interp_NC(energy)
+        return self.interp_CC(nu_energy) + self.interp_NC(nu_energy)
 
-    def CC_cross_section(self, energy):
+    def CC_cross_section(self, nu_energy):
         '''Returns the CC cross section at the given energy
         Parameters
         ----------
-        energy: float or numpy.ndarray
-                The energy or energies that the cross section will be evaluated at
+        nu_energy: float or numpy.ndarray
+                The neutrino energy or energies that the cross section will be evaluated at
         
         Returns
         -------
         cross_section: float or numpy.ndarray
         '''
 
-        return self.interp_CC(energy)
+        return self.interp_CC(nu_energy)
 
 
-    def NC_cross_section(self, energy):
+    def NC_cross_section(self, nu_energy):
         '''Returns the NC cross section at the given energy
         Parameters
         ----------
-        energy: float or numpy.ndarray
+        nu_energy: float or numpy.ndarray
                 The energy or energies that the cross section will be evaluated at
         
         Returns
@@ -63,5 +63,5 @@ class Cross_Section:
         cross_section: float or numpy.ndarray
         '''
 
-        return self.interp_NC(energy)
+        return self.interp_NC(nu_energy)
     

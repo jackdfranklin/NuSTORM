@@ -30,10 +30,10 @@ class Flux:
         #Interpolate differential flux to overcome binning differences
         self.interp_diff_flux = interpolate.UnivariateSpline(self.energies, self.diff_flux)
 
-    def diff_flux(self, energy);
+    def diff_flux(self, nu_energy);
         '''Wrapper function for the interpolated differential flux, energy should be in GeV'''
 
-        return self.interp_diff_flux(energy)
+        return self.interp_diff_flux(nu_energy)
 
     def get_units(self):
         '''Prints out the stored values and their units'''

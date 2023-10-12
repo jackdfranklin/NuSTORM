@@ -19,7 +19,7 @@ class Flux:
 
         self.deltaE = 0.06
         #Calculate differential flux from integrated flux
-        self.diff_flux = self.int_flux/self.deltaE
+        diff_flux = self.int_flux/self.deltaE
 
         #Dictionary to keep track of units
         self.units = {
@@ -28,7 +28,7 @@ class Flux:
             "Differential Flux":"cm^-2 GeV^-1 POT^-1"}
 
         #Interpolate differential flux to overcome binning differences
-        self.interp_diff_flux = interpolate.UnivariateSpline(self.energies, self.diff_flux)
+        self.interp_diff_flux = interpolate.UnivariateSpline(self.energies, diff_flux)
 
     def diff_flux(self, nu_energy):
         '''Wrapper function for the interpolated differential flux, energy should be in GeV'''

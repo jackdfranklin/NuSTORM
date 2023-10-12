@@ -1,27 +1,14 @@
 import numpy as np
+import scipy.integrate as integrate
 
 import flux
-import cross_sections
+import cross_section
 
 class Experiment:
 
     '''Class which contains information about the experimental setup. This includes fluxes and detector properties'''
 
-    def __init__(self):
-        '''Returns the total cross section (CC + NC) at the given energy
-
-        Parameters
-        ----------
-        nu_energy: float or numpy.ndarray
-                The neutrino energy or energies that the cross section will be evaluated at
-        
-        Returns
-        -------
-        cross_section: float or numpy.ndarray
-        '''
-        return None
-
-   def get_events(self):
+    def get_events(self):
         return 0 
 
     def get_fluxes(self):
@@ -42,18 +29,32 @@ class ProtoDuneLike(Experiment):
         }
 
         self.cross_sec_dict = { #Store a cross section object for each flavour of neutrino
-            "nubar_mu": cross_sections.Cross_Section("../resources/cross_sections/numu_Ar_xsec.txt"), #REPLACE WITH NUBAR_MU CROSS SECTIONS WHEN AVAILABLE
-            "nu_e": cross_sections.Cross_Section("../resources/cross_sections/nue_Ar_xsec.txt"),
+            "nubar_mu_Ar": cross_section.Cross_Section("../resources/cross_sections/numu_Ar_xsec.txt"), #REPLACE WITH NUBAR_MU CROSS SECTIONS WHEN AVAILABLE
+            #"nubar_mu_e":
+            "nu_e_Ar": cross_section.Cross_Section("../resources/cross_sections/nue_Ar_xsec.txt"),
+            #"nu_e_e":
         } 
 
-    LAr_density = 1400 * 10**-6 #kg cm^-3
-    self.target_mass = self.volume*LAr_density
-    self.N_Ar = 1000/40 * 6.022*10**23 * 1000 #Number of Argon atoms per kg of Argon
-    self.N_e = 18*self.N_Ar #Number of electrons per kg of Argon
-    self.N_p = self.N_e #Number of protons per kg of Argon
-    self.N_N = 22*self.N_Ar #Number of neutrons per kg of Argon
+        LAr_density = 1400 * 10**-6 #kg cm^-3
+        self.target_mass = self.volume*LAr_density
+        self.N_Ar = 1000/40 * 6.022*10**23 * 1000 #Number of Argon atoms per kg of Argon
+        self.N_e = 18*self.N_Ar #Number of electrons per kg of Argon
+        self.N_p = self.N_e #Number of protons per kg of Argon
+        self.N_N = 22*self.N_Ar #Number of neutrons per kg of Argon
 
-     
+    def get_events(self, POT):
+
+        Emin = 0.1
+        Emax = 20
+        flux = self.flux_dict["nubar_mu"]   
+        cross_section = self.cross_sec_dict["nubar_mu_Ar"]
+        events = integrate.quad(lambda E: flux.diff_flux(E)*cross_section.total_cross_section(E), Emin, Emax)[0]*POT
+        return events
 
 
+if __name__ == "__main__":
+
+    protoDune = ProtoDuneLike(5000)
     
+    N_events = protoDune.get_events(10**7)
+    print(str(N_events) + " expected!")

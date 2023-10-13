@@ -37,7 +37,7 @@ class ProtoDuneLike(Experiment):
 
         LAr_density = 1400 * 10**-6 #kg cm^-3
         self.target_mass = self.volume*LAr_density
-        self.N_Ar = 1000/40 * 6.022*10**23 * 1000 #Number of Argon atoms per kg of Argon
+        self.N_Ar = 1000/40 * 6.022*10**23 * self.target_mass#Number of Argon atoms in the detector
         self.N_e = 18*self.N_Ar #Number of electrons per kg of Argon
         self.N_p = self.N_e #Number of protons per kg of Argon
         self.N_N = 22*self.N_Ar #Number of neutrons per kg of Argon

@@ -20,7 +20,7 @@ class ProtoDuneLike(Experiment):
     def __init__(self, length):
 
         self.length = length #Length of detector volume in cm
-        self.area = (50*100)**2 #Area of face of detector volume in cm^2
+        self.area = (50*50)**2 #Area of face of detector volume in cm^2
         self.volume = self.length*self.area #in cm^3
 
         self.flux_dict = { #Store flux instances in a dictionary. Naming convention is nu/nubar for neutrino/antineutrino, followed by the flavour (e,mu,tau)

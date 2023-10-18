@@ -94,6 +94,7 @@ class Electron_Scattering(Cross_Section):
 
     def __init__(self, PDG_ID):
 
-        self.total_cross_section_const = const_dict[PDG_ID]
-        self.lepton_mass = lepton_mass_dict[PDG_ID]
+        
+        self.total_cross_section_const = self.const_dict[PDG_ID]
+        self.lepton_mass = self.lepton_mass_dict[PDG_ID]
 

@@ -24,14 +24,14 @@ class ProtoDuneLike(Experiment):
         self.volume = self.length*self.area #in cm^3
 
         self.flux_dict = { #Store flux instances in a dictionary. Naming convention is nu/nubar for neutrino/antineutrino, followed by the flavour (e,mu,tau)
-            "nubar_mu": flux.Flux("../resources/fluxes/E6spectraMuSig557Numu.txt"),
-            "nu_e": flux.Flux("../resources/fluxes/E6spectraMuSig557Nue.txt")
+            "nubar_mu": flux.Flux("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/fluxes/E6spectraMuSig557Numu.txt"),
+            "nu_e": flux.Flux("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/fluxes/E6spectraMuSig557Nue.txt")
         }
 
         self.cross_sec_dict = { #Store a cross section object for each flavour of neutrino
-            "nubar_mu_Ar": cross_section.Cross_Section("../resources/cross_sections/numu_Ar_xsec.txt"), #REPLACE WITH NUBAR_MU CROSS SECTIONS WHEN AVAILABLE
+            "nubar_mu_Ar": cross_section.Cross_Section("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/cross_sections/numu_Ar_xsec.txt"), #REPLACE WITH NUBAR_MU CROSS SECTIONS WHEN AVAILABLE
             #"nubar_mu_e":
-            "nu_e_Ar": cross_section.Cross_Section("../resources/cross_sections/nue_Ar_xsec.txt"),
+            "nu_e_Ar": cross_section.Cross_Section("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/cross_sections/nue_Ar_xsec.txt"),
             #"nu_e_e":
         } 
 

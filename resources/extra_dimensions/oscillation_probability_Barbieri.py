@@ -14,11 +14,11 @@ m0 = 0 #lightest mass5*10**(-2)#
 N = 4
 
 #mass differences in eVs
-delta_21 = 7.53*10**(-5)#7.59*10**(-5)
-delta_31 = 2.51*10**(-3)#2.46*10**(-3)
+delta_21 = 7.59*10**(-5)#7.59*10**(-5)
+delta_31 = 2.46*10**(-3)#2.46*10**(-3)
 
 #circular radius of extra dimensions in μm conveted to eV^-1
-a_LED = 0.5/(1.97*10**(-1))  #0.38#
+a_LED = 0.5/(1.97*10**(-1))  #0.38#-1
 
 
 #Length in km to eV^-1
@@ -48,7 +48,7 @@ IH_dict = {
 #---------------------------------------------------------------------------------------------------------------------
 #PMNS matrix
 #Dirac phase taken to be π
-delta = 1
+delta = -1
 
 #x = 0.9822
 x = 0.0178
@@ -118,11 +118,10 @@ def calculate_ξ(dictionary, a):
 
     ξ = np.empty((3))
 
-    for i in range(1,3):
+    for i in range(1,4):
         mi = "m{}".format(i)
         ξ[i-1] = ξ_i(dictionary[mi],a)
-
-    #print(ξ)
+        
     return ξ
 
 
@@ -146,11 +145,11 @@ def M_dagger_M(ξ, N):
    
 
 
-def Amplitude(alpha, beta, L, E, a,  eigenvalues, eigenvectors):
+def Amplitude(alpha, beta, L, E,a, eigenvalues, eigenvectors):
     total_sum = 0
-    N_max = 5  # Adjust N_max as needed
+    N_max = 5  # Adjust N_max 
     
-    for i in range(1, 3):
+    for i in range(1, 4):
        
         for N in range(N_max):      
             total_sum += (
@@ -158,7 +157,7 @@ def Amplitude(alpha, beta, L, E, a,  eigenvalues, eigenvectors):
                 *np.conj(PMNS_dict["{}{}".format(beta, i)])
                 #*np.conj(eigenvectors[i-1,N])
                 * eigenvectors[i-1, N]**2
-                * cmath.exp(complex(0, (eigenvalues[i-1, N]*L ) / (2 * E  ))  )
+                * cmath.exp(complex(0, (eigenvalues[i-1, N]*L ) / (2 * E)  )  )
                 )
     
     return total_sum
@@ -264,14 +263,29 @@ def Standard_prob(alpha, Energy_start, Energy_stop, number_of_points, length):
 
 
 
-print(P_e(1.6e6, L_3))
-print(P_e(8e6, L_3))
+# print(P_e(1.6e6, L_3))
+# print(P_e(8e6, L_3))
 
-print(P_e(1e5, L_3))
-print(P_e(1e5, L_3))
+# print(P_e(1e5, L_3))
+# print(P_e(1e5, L_3))
 
 #exit()
 #print(Probability(Amplitude('e', 'e', L_3, 1e6, a_LED, eigenvalues_NH, eigenvectors_NH))  #a, eigenvalue_array, eigenvector_matrix)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -281,7 +295,7 @@ def Plot(Energy_start, Energy_stop, number_of_points, length, alpha, beta, eigen
     E = np.linspace(Energy_start, Energy_stop, number_of_points)
     probabilities_NH = np.empty(number_of_points)
     probabilities_IH = np.empty(number_of_points)
-    probabilities_standard = Standard_prob(alpha, Energy_start, Energy_stop, number_of_points, length)
+    #probabilities_standard = Standard_prob(alpha, Energy_start, Energy_stop, number_of_points, length)
     
     #NH
     for n in range(number_of_points):
@@ -331,7 +345,8 @@ def check(Hamiltonian, eigenvector_matrix, eigenvalues):
 ξ_IH = calculate_ξ(IH_dict, a_LED)
 
 
-
+print(ξ_NH)
+print(ξ_IH)
 
 
 M1_M1_dagger_NH = M_dagger_M(ξ_NH[0], N)
@@ -406,28 +421,112 @@ eigenvalues_IH[2] = eigenval_M3_IH
 
 
 
-# print(eigenvalues_NH)
-# print(eigenvalues_IH)
+# print(eigenvector_NH)
 
-
-
-
-print('test',Probability(Amplitude('e', 'e', L_3, 7.4e6, a_LED, eigenvalues_IH, eigenvector_IH)))  #a, eigenvalue_array, eigenvector_matrix)
-
-
-
-
-
-
-#print(check(H_NH, NH_eigenvector_matrix, NH_eigenvalues_matrix))
-#print(check(H_IH, IH_eigenvector_matrix, IH_eigenvalues_matrix))
+# print(eigenvector_IH)
 
 
 
 
 
 
-#
+Energy_start1 = 1e9
+Energy_stop1 = 5e9
+Energy_start2 = 1e6
+Energy_stop2 = 9e6
+Energy_start3 = 1e6
+Energy_stop3 = 9e6
+
+
+file_standard_Figure1 = open('standard_probability_to_plot_Figure1.txt', 'w')
+file_standard_Figure2 = open('standard_probability_to_plot_Figure2.txt', 'w')
+file_standard_Figure3 = open('standard_probability_to_plot_Figure3.txt', 'w')
+
+def probability_mu(file, Energy_start, Energy_stop, number_of_points, length):
+    
+    E = np.linspace(Energy_start,Energy_stop, number_of_points )
+    Probabilities = np.empty(number_of_points)
+
+    for i in range(number_of_points):
+        Probabilities[i] = P_mu(E[i], length)
+        entry = str(E[i]) + '-' + str(Probabilities[i])+'\n'
+        file.write(entry)
+    return 
+
+
+def probability_e(file, Energy_start, Energy_stop, number_of_points, length):
+    
+    E = np.linspace(Energy_start,Energy_stop, number_of_points )
+    Probabilities = np.empty(number_of_points)
+
+    for i in range(number_of_points):
+        Probabilities[i] = P_e(E[i], length)
+        entry = str(E[i]) + '-' + str(Probabilities[i])+'\n'
+        file.write(entry)
+    return 
+
+probability_mu(file_standard_Figure1, Energy_start1, Energy_stop1, 5000, L_1)
+probability_e(file_standard_Figure2,Energy_start2, Energy_stop2,5000,  L_2 )
+probability_e(file_standard_Figure3, Energy_start3, Energy_stop3,5000, L_3)
+
+file_standard_Figure1.close()
+file_standard_Figure2.close()
+file_standard_Figure3.close()
+
+
+NH_file_Figure3 = open('NH_probability_to_plot_Figure3.txt', 'w')
+IH_file_Figure3 = open('IH_probability_to_plot_Figure3.txt', 'w')
+NH_file_Figure2 = open('NH_probability_to_plot_Figure2.txt', 'w')
+IH_file_Figure2 = open('IH_probability_to_plot_Figure2.txt', 'w')
+NH_file_Figure1 = open('NH_probability_to_plot_Figure1.txt', 'w')
+IH_file_Figure1 = open('IH_probability_to_plot_Figure1.txt', 'w')
+
+
+
+def Write(file1, file2, Energy_start, Energy_stop, number_of_points, length, alpha, beta, eigenvalues_NH, eigenvectors_NH, eigenvalues_IH, eigenvectors_IH):
+    
+
+
+    E = np.linspace(Energy_start, Energy_stop, number_of_points)
+    probabilities_NH = np.empty(number_of_points)
+    probabilities_IH = np.empty(number_of_points)
+    
+    #NH
+    for n in range(number_of_points):
+        probabilities_NH[n] = Probability(Amplitude(alpha, beta, length, E[n], a_LED, eigenvalues_NH, eigenvectors_NH))  #a, eigenvalue_array, eigenvector_matrix)
+        entry = str(E[n]) + '-' + str(probabilities_NH[n])+'\n'
+        file1.write(entry)
+    #ΙH
+    for n in range(number_of_points):
+        probabilities_IH[n] = Probability(Amplitude(alpha, beta, length,E[n], a_LED, eigenvalues_IH, eigenvectors_IH))
+        entry = str(E[n]) + '-' + str(probabilities_IH[n])+'\n'
+        file2.write(entry)
+        #print(probabilities_IH[n])
+    
+    
+    return 
+
+Write(NH_file_Figure3, IH_file_Figure3, Energy_start3, Energy_stop3,  5000, L_3, 'e', 'e', eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH )
+Write(NH_file_Figure2, IH_file_Figure2,Energy_start2, Energy_stop2,  5000, L_2, 'e', 'e',eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH)
+Write(NH_file_Figure1, IH_file_Figure1,Energy_start1, Energy_stop1, 5000, L_1, 'mu', 'mu', eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH )
+
+
+
+
+NH_file_Figure3.close()
+IH_file_Figure3.close()
+NH_file_Figure2.close()
+IH_file_Figure2.close()
+NH_file_Figure1.close()
+IH_file_Figure1.close()
+
+
+
+
+
+
+
+
     
 
 
@@ -437,9 +536,9 @@ print('test',Probability(Amplitude('e', 'e', L_3, 7.4e6, a_LED, eigenvalues_IH, 
 
 
 
-Plot(1.6*10**4,8*10**6 , 5000, L_3, 'e', 'e', eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH, 'L3', "E(MeV)" )
-Plot(1.6*10**5,8*10**6 , 5000, L_2, 'e', 'e',eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH ,'L2', "E(MeV)" )
-Plot(1.6*10**6,5*10**9 , 5000, L_1, 'mu', 'mu', eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH, 'L1', "E(GeV)" )
+Plot(Energy_start3, Energy_stop3 , 5000, L_3, 'e', 'e', eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH, 'L3', "E(MeV)" )
+Plot(Energy_start2, Energy_stop2 , 5000, L_2, 'e', 'e',eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH ,'L2', "E(MeV)" )
+Plot(Energy_start1, Energy_stop1 , 5000, L_1, 'mu', 'mu', eigenvalues_NH, eigenvector_NH,eigenvalues_IH, eigenvector_IH, 'L1', "E(GeV)" )
 
 
 

@@ -1,6 +1,5 @@
 import numpy as np
 import cmath
-from scipy.optimize import newton_krylov
 import matplotlib.pyplot as plt
 
 
@@ -18,7 +17,7 @@ delta_21 = 7.53*10**(-5)#7.59*10**(-5)
 delta_31 = 2.51*10**(-3)#2.46*10**(-3)
 
 #circular radius of extra dimensions in μm conveted to eV^-1
-a_LED = 0.5/(1.97*10**(-1))  #0.38#
+a_LED = 0.5/(1.9732705*10**(-1))  #0.38#
 
 
 #Length in km to eV^-1
@@ -45,10 +44,11 @@ IH_dict = {
 }
 
 
+
 #---------------------------------------------------------------------------------------------------------------------
 #PMNS matrix
 #Dirac phase taken to be π
-delta = 1
+delta = -1
 
 #x = 0.9822
 x = 0.0178
@@ -118,7 +118,7 @@ def calculate_ξ(dictionary, a):
 
     ξ = np.empty((3))
 
-    for i in range(1,3):
+    for i in range(1,4):
         mi = "m{}".format(i)
         ξ[i-1] = ξ_i(dictionary[mi],a)
 
@@ -131,6 +131,96 @@ def η(N, ξ_i):
 
 
 
+def P_e(E,L):
+
+    m1 =  m0
+    m2 = np.sqrt(delta_21)
+    m3 = np.sqrt(delta_31)
+
+    Delta_21 = (m2**2-m1**2)*L/(4*E)
+    Delta_31 = (m3**2-m1**2)*L/(4*E)
+    Delta_32 = (m3**2-m2**2)*L/(4*E)
+
+    U_e1 = abs(PMNS_dict["{}".format("e")+"{}".format(1)])**2
+    U_e2 = abs(PMNS_dict["{}".format("e")+"{}".format(2)])**2
+    U_e3 = abs(PMNS_dict["{}".format("e")+"{}".format(3)])**2
+
+    P = 1 -4*U_e1*U_e2*(np.sin(Delta_21)**2) -4*U_e1*U_e3*(np.sin(Delta_31)**2) -4*U_e2*U_e3*(np.sin(Delta_32)**2)
+
+    return P
+
+
+def Plot_probability_e(Energy_stop, number_of_points, length, legend):
+    
+    E = np.linspace(1,Energy_stop, number_of_points )
+    Probabilities = np.empty(number_of_points)
+
+    for i in range(number_of_points):
+        Probabilities[i] = P_e(E[i], length)
+
+    plt.figure()
+    plt.scatter(E, Probabilities, label = '{}'.format('standard'+ '{}'.format(legend)))
+    plt.legend()
+    plt.show()
+    return 
+
+
+
+#Plot_probability_e(9*10**(6) , 500, L_2, "L2")
+#Plot_probability_e(9*10**(6) , 500, L_3, "L3")
+
+
+
+def P_mu(E,L):
+
+    m1 =  m0
+    m2 = np.sqrt(delta_21)
+    m3 = np.sqrt(delta_31)
+
+    Delta_21 = (m2**2-m1**2)*L/(4*E)
+    Delta_31 = (m3**2-m1**2)*L/(4*E)
+    Delta_32 = (m3**2-m2**2)*L/(4*E)
+
+    U_mu1 = abs(PMNS_dict["{}".format("mu")+"{}".format(1)])**2
+    U_mu2 = abs(PMNS_dict["{}".format("mu")+"{}".format(2)])**2
+    U_mu3 = abs(PMNS_dict["{}".format("mu")+"{}".format(3)])**2
+
+    P = 1 -4*U_mu1*U_mu2*(np.sin(Delta_21)**2) -4*U_mu1*U_mu3*(np.sin(Delta_31)**2) -4*U_mu2*U_mu3*(np.sin(Delta_32)**2)
+
+    return P
+
+
+def Plot_probability_mu(Energy_stop, number_of_points, length, legend):
+    
+    E = np.linspace(1,Energy_stop, number_of_points )
+    Probabilities = np.empty(number_of_points)
+
+    for i in range(number_of_points):
+        Probabilities[i] = P_mu(E[i], length)
+
+    plt.figure()
+    plt.scatter(E, Probabilities, label = '{}'.format('standard'+ '{}'.format(legend)))
+    plt.legend()
+    plt.show()
+    return 
+
+
+def Standard_prob(alpha, Energy_start, Energy_stop, number_of_points, length):
+    E = np.linspace(Energy_start,Energy_stop, number_of_points )
+    Probabilities = np.empty(number_of_points)
+
+    if alpha == "mu":
+        for i in range(number_of_points):
+            Probabilities[i] = P_mu(E[i], length)
+
+    elif alpha == 'e':
+        for i in range(number_of_points):
+            Probabilities[i] = P_e(E[i], length)
+    
+    return Probabilities
+
+
+
 
 
 #Amplitude as a function of energy. 
@@ -140,12 +230,12 @@ def η(N, ξ_i):
 
 def Amplitude(alpha, beta, L, E, a, eigenvalue_array, eigenvector_matrix):
     total_sum = 0
-    N_max = 4  # Adjust N_max as needed
+    N_max = 5  # Adjust N_max as needed
     
-    for i in range(1, 3):
-        for J in range(1, 3):
-            for k in range(1, 3):
-                for N in range(N_max):
+    for i in range(1, 4):
+        for J in range(1, 4):
+            for k in range(1, 4):
+                for N in range(0, N_max):
                     eigenvector = eigenvector_matrix[:, N * 3:(N + 1) * 3]
                     eigenvalue = eigenvalue_array[N * 3 + J - 1]
                     
@@ -176,6 +266,7 @@ def Plot(Energy_start, Energy_stop, number_of_points, length, alpha, beta, eigen
     E = np.linspace(Energy_start,Energy_stop, number_of_points )
     probabilities_NH = np.empty(number_of_points)
     probabilities_IH = np.empty(number_of_points)
+    probabilities_standard = Standard_prob(alpha, Energy_start, Energy_stop, number_of_points, length)
 
     #NH
     for n in range(number_of_points):
@@ -191,6 +282,7 @@ def Plot(Energy_start, Energy_stop, number_of_points, length, alpha, beta, eigen
     plt.figure()
     plt.plot(E, probabilities_NH, label = '{}'.format('NH'+ '{}'.format(legend)))
     plt.plot(E, probabilities_IH, label = '{}'.format('IH'+ '{}'.format(legend)))
+    plt.plot(E, probabilities_standard, label = '{}'.format('standard'+ '{}'.format(legend)))
     plt.legend()
     # plt.ylim(0, 1)
     plt.show()
@@ -271,16 +363,7 @@ def check(Hamiltonian, eigenvector_matrix, eigenvalues):
 
     return
 
-#print(check(H_NH, NH_eigenvector_matrix, NH_eigenvalues_matrix))
-#print(check(H_IH, IH_eigenvector_matrix, IH_eigenvalues_matrix))
 
-print(NH_eigenvector_matrix)
-
-
-
-
-
-#Taking the M=0 elements and splitting into N=1,2,3
 
 NH_eigenvector_matrix = NH_eigenvector_matrix[0:3, :] 
 IH_eigenvector_matrix = IH_eigenvector_matrix[0:3, :]
@@ -291,8 +374,7 @@ IH_eigenvector_matrix = IH_eigenvector_matrix[0:3, :]
 
 
 
-#print(NH_eigenvector_matrix)
-# print(IH_eigenvector_matrix)
+
 
 
 
@@ -312,80 +394,6 @@ Plot(1*10**(9),5*10**(9) , 1000, L_1, 'mu', 'mu', NH_eigenvalues_matrix, NH_eige
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-def P_e(E,L):
-
-    m1 =  m0
-    m2 = delta_21
-    m3 = delta_31
-
-    Delta_21 = (m2**2-m1**2)*L/(4*E)
-    Delta_31 = (m3**2-m1**2)*L/(4*E)
-    Delta_32 = (m3**2-m2**2)*L/(4*E)
-
-    U_e1 = abs(PMNS_dict["{}".format("e")+"{}".format(1)])**2
-    U_e2 = abs(PMNS_dict["{}".format("e")+"{}".format(2)])**2
-    U_e3 = abs(PMNS_dict["{}".format("e")+"{}".format(3)])**2
-
-    P = 1 -4*U_e1*U_e2*(np.sin(Delta_21)**2) -4*U_e1*U_e3*(np.sin(Delta_31)**2) -4*U_e2*U_e3*(np.sin(Delta_32)**2)
-
-    return P
-
-
-def Plot_probability_e(Energy_stop, number_of_points, length, legend):
-    
-    E = np.linspace(1,Energy_stop, number_of_points )
-    Probabilities = np.empty(number_of_points)
-
-    for i in range(number_of_points):
-        Probabilities[i] = P_e(E[i], length)
-
-    plt.figure()
-    plt.scatter(E, Probabilities, label = '{}'.format('standard'+ '{}'.format(legend)))
-    plt.legend()
-    plt.show()
-    return 
-
-
-
-#Plot_probability_e(9*10**(6) , 500, L_2, "L2")
-#Plot_probability_e(9*10**(6) , 500, L_3, "L3")
-
-
-
-def P_mu(E,L):
-
-    m1 =  m0
-    m2 = delta_21
-    m3 = delta_31
-
-    Delta_21 = (m2**2-m1**2)*L/(4*E)
-    Delta_31 = (m3**2-m1**2)*L/(4*E)
-    Delta_32 = (m3**2-m2**2)*L/(4*E)
-
-    U_mu1 = abs(PMNS_dict["{}".format("mu")+"{}".format(1)])**2
-    U_mu2 = abs(PMNS_dict["{}".format("mu")+"{}".format(2)])**2
-    U_mu3 = abs(PMNS_dict["{}".format("mu")+"{}".format(3)])**2
-
-    P = 1 -4*U_mu1*U_mu2*(np.sin(Delta_21)**2) -4*U_mu1*U_mu3*(np.sin(Delta_31)**2) -4*U_mu2*U_mu3*(np.sin(Delta_32)**2)
-
-    return P
-
-
-def Plot_probability_mu(Energy_stop, number_of_points, length, legend):
-    
-    E = np.linspace(1,Energy_stop, number_of_points )
-    Probabilities = np.empty(number_of_points)
-
-    for i in range(number_of_points):
-        Probabilities[i] = P_mu(E[i], length)
-
-    plt.figure()
-    plt.scatter(E, Probabilities, label = '{}'.format('standard'+ '{}'.format(legend)))
-    plt.legend()
-    plt.show()
-    return 
-
 
 
 #Plot_probability_mu(9*10**(9) , 500, L_1, 'L1')
@@ -423,8 +431,6 @@ def Plot_probability_mu(Energy_stop, number_of_points, length, legend):
 
 
 
-print(NH_dict)
-print(IH_dict)
 
 
 # print(NH_dict["m1"]*a_LED)

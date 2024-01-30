@@ -380,7 +380,7 @@ IH_eigenvector_matrix = IH_eigenvector_matrix[0:3, :]
 
 
 
-#Plot(1.5*10**(6),9*10**(6) , 1000, L_3, 'e', 'e', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L3' )
+# Plot(1.5*10**(6),9*10**(6) , 1000, L_3, 'e', 'e', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L3' )
 # Plot(1.5*10**(6),9*10**(6) , 1000, L_2, 'e', 'e', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L2' )
 # Plot(1*10**(9),5*10**(9) , 1000, L_1, 'mu', 'mu', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L1' )
 
@@ -388,9 +388,9 @@ IH_eigenvector_matrix = IH_eigenvector_matrix[0:3, :]
 #Plot( 1e9, 2e9, 1000, L_4, 'e', 'mu', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L4' )
 
 
-Plot( 1.5e9, 9e9 , 1000, L_4, 'e', 'e', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L4' )
+Plot( 1e9, 20e9 , 1000, L_4, 'e', 'e', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L4' )
 
-Plot( 1.5e9, 9e9 , 1000, L_4, 'e', 'mu', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L4' )
+Plot( 1e9, 20e9 , 1000, L_4, 'mu', 'mu', NH_eigenvalues_matrix, NH_eigenvector_matrix,IH_eigenvalues_matrix, IH_eigenvector_matrix, 'L4' )
 
 
 

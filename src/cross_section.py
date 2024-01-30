@@ -9,8 +9,8 @@ class Cross_Section:
 
         #Store values of energy midpoints and integrated cross section(s)
         self.energies = raw_data[:,0]
-        self.CC_cross_section = raw_data[:,1]
-        self.NC_cross_section = raw_data[:,2]
+        self.CC_cross_section = raw_data[:,1]*1e-38
+        self.NC_cross_section = raw_data[:,2]*1e-38
 
         #Interpolate cross sections
         self.interp_CC = interpolate.UnivariateSpline(self.energies, self.CC_cross_section)

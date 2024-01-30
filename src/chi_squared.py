@@ -16,8 +16,11 @@ def Sort_values(file_name):
         # Iterate through each line in the file
         for line in file:
             # Split the line into R_LED, N_events_LED_nu_e_NH, and N_events_LED_nu_e_IH using '-' as a delimiter
-            R_LED, N_events_NH, N_events_IH = map(float, line.strip().split('-'))
-
+            #R_LED, N_events_NH, N_events_IH = map(float, line.strip().split('-'))
+            R_LED, N_events_NH, N_events_IH = map(
+            float,
+            map(lambda x: float(x) if ('e' in x or 'E' in x) else x, line.strip().split('-'))
+            )
             # Append the values to their respective arrays
             R_LED_values.append(R_LED)
             N_events_NH_values.append(N_events_NH)
@@ -64,7 +67,7 @@ def Plot(R_LED, N_events_NH, N_events_IH, N_events_standard, title):
     plt.plot(R_LED, χ_squared_IH, label = 'IH')
     plt.legend()
 
-    plt.xlabel(r'$Log\left(R_{LED}\right)$')  #l_0 = 1μm
+    plt.xlabel(r'$R_{LED}(μm)$')  #l_0 = 1μm
     plt.ylabel(r'$\chi^2$')
     plt.xscale('log')
     plt.title(title)

@@ -3,8 +3,6 @@ import cmath
 import matplotlib.pyplot as plt
 
 
-
-
 #--------------------------------------------------------------------------------------------------------------------------
 #CONSTANTS
 
@@ -13,7 +11,7 @@ import matplotlib.pyplot as plt
 
 m0 = 0 #lightest mass5*10**(-2)#
 N = 4
-N_points = 1000
+N_points = 30
 
 #mass differences in eVs
 delta_21 = 7.53*10**(-5)
@@ -24,13 +22,11 @@ delta_31 = 2.51*10**(-3)
 conversion_factor_μm_to_eV = 1.9732705*10**(-1)  
 R_LED_ = np.logspace(np.log10(1e-3), np.log10(5), N_points)
 R_LED = R_LED_/conversion_factor_μm_to_eV
-# R_LED_ = np.linspace(1e-3, 5, N_points)
-# R_LED = R_LED_/conversion_factor_μm_to_eV
 
+
+#L is given in meters and converted into eV-1 in the probability functions
 #Length in m to eV^-1
 conversion_factor_m_to_eV = 1.9732705*10**(-7)
-L = 3000/conversion_factor_m_to_eV
-
 
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -102,9 +98,6 @@ PMNS_dict = {
     "tau2": PMNS[2,1],
     "tau3": PMNS[2,2]}
     
-
-
-
 
 
 #------------------------------------------------------------------------------------------------------------------
@@ -190,152 +183,17 @@ def find_eigen(mass_dictionary, a):
     return eigenvalues, eigenvector_matrix
 
 
-
-
-#----------------------------------------------------------------------------------------------------------------------------------
-#Calculating the standard probabilities without extra dimensions
-
-def P_e(E,L):
-
-    m1 =  m0
-    m2 = np.sqrt(delta_21)
-    m3 = np.sqrt(delta_31)
-
-    Delta_21 = (m2**2-m1**2)*L/(4*E)
-    Delta_31 = (m3**2-m1**2)*L/(4*E)
-    Delta_32 = (m3**2-m2**2)*L/(4*E)
-
-    U_e1 = abs(PMNS_dict["{}".format("e")+"{}".format(1)])**2
-    U_e2 = abs(PMNS_dict["{}".format("e")+"{}".format(2)])**2
-    U_e3 = abs(PMNS_dict["{}".format("e")+"{}".format(3)])**2
-
-    P = 1 -4*U_e1*U_e2*(np.sin(Delta_21)**2) -4*U_e1*U_e3*(np.sin(Delta_31)**2) -4*U_e2*U_e3*(np.sin(Delta_32)**2)
-
-    return P
-
-
-def P_mu(E,L):
-
-    m1 =  m0
-    m2 = np.sqrt(delta_21)
-    m3 = np.sqrt(delta_31)
-
-    Delta_21 = (m2**2-m1**2)*L/(4*E)
-    Delta_31 = (m3**2-m1**2)*L/(4*E)
-    Delta_32 = (m3**2-m2**2)*L/(4*E)
-
-    U_mu1 = abs(PMNS_dict["{}".format("mu")+"{}".format(1)])**2
-    U_mu2 = abs(PMNS_dict["{}".format("mu")+"{}".format(2)])**2
-    U_mu3 = abs(PMNS_dict["{}".format("mu")+"{}".format(3)])**2
-
-    P = 1 -4*U_mu1*U_mu2*(np.sin(Delta_21)**2) -4*U_mu1*U_mu3*(np.sin(Delta_31)**2) -4*U_mu2*U_mu3*(np.sin(Delta_32)**2)
-
-    return P
-
-
-def Standard_prob(alpha, Energy, length):
-    
-    Probabilities = np.empty(N_points)
-
-    if alpha == "mu":
-        for i in range(N_points):
-            Probabilities[i] = P_mu(Energy, length)
-
-    elif alpha == 'e':
-        for i in range(N_points):
-            Probabilities[i] = P_e(Energy, length)
-    
-    return Probabilities
-
-#-----------------------------------------------------------------------------------------------------------------
-
-def Plot(a, length, Energy, alpha, beta, label):
-    
-
-    probabilities_NH = np.empty(N_points)
-    probabilities_IH = np.empty(N_points)
-    probabilities_standard = Standard_prob(alpha, Energy ,length)
-
-    #NH
-    for n in range(N_points):
-        eigenvalues_NH, eigenvectors_NH = find_eigen(NH_dict, a[n])
-        probabilities_NH[n] = Probability(Amplitude(alpha, beta, length, Energy, a[n], eigenvalues_NH, eigenvectors_NH))  
-        
-
-    #ΙH
-    for n in range(N_points):
-        eigenvalues_IH, eigenvectors_IH = find_eigen(IH_dict, a[n])
-        probabilities_IH[n] = Probability(Amplitude(alpha, beta, length,Energy, a[n], eigenvalues_IH, eigenvectors_IH))
-
-    #x = a*conversion_factor_μm_to_eV
-
-    plt.figure()
-    plt.plot(R_LED_, probabilities_NH, label = 'NH', color = 'blue')
-    plt.plot(R_LED_, probabilities_IH, label = 'IH', color = 'orange' )
-    plt.plot(R_LED_, probabilities_standard, label = 'SM', color= 'g')
-    plt.xlabel(r'$R_{LED}(μm)$')  #l_0 = 1μm
-    plt.xscale('log')
-    plt.ylabel(label)
-    plt.legend(title = '{}'.format('Energy at Max Flux= '+'{}'.format(Energy/1e9)+ 'GeV'))
-    #plt.title(r'$P({} \rightarrow {})$'.format(neutrino_type1, neutrino_type2))
-    plt.show()
-    return 
-
-#--------------------------------------------------------------------------------------------------------------------------------------
-#E = 2e9
-
-
-
-
-#--------------------------------------------------------------------------------------------------------------------------------------------
-file1 = open('/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/fluxes/E6spectraMuSig557Numu.txt', 'r')
-file2 = open('/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/fluxes/E6spectraMuSig557Nue.txt', 'r')
-
-data1 = np.loadtxt(file1, skiprows=1)
-data2 = np.loadtxt(file2, skiprows=1)
-
-energies1 = data1[:,0]
-flux1 = data1[:,1]
-
-energies2 = data2[:,0]
-flux2 = data2[:,1]
-
-def find_max_flux_energy(energies, flux):
-    
-    max_flux_index = flux.argmax()  # Index of the maximum flux value
-    
-    energy_at_max_flux = energies[max_flux_index]  # Energy corresponding to the maximum flux
-    return energy_at_max_flux
-
-max_flux_energy_numu = find_max_flux_energy(energies1, flux1)
-max_flux_energy_nue = find_max_flux_energy(energies2, flux2)
-
-print(max_flux_energy_numu)
-print(max_flux_energy_nue)
-
-#--------------------------------------------------------------------------------------------------------------------------------------------------
-#From GeV to eV
-max_flux_energy_numu = max_flux_energy_numu*10**9
-max_flux_energy_nue = max_flux_energy_nue*10**9
-
-
-Plot(R_LED, L, max_flux_energy_nue, 'e', 'e', r'$P(ν_e \rightarrow ν_e)$' )
-Plot(R_LED, L, max_flux_energy_numu, 'mu', 'mu', r'$P(\bar ν_μ \rightarrow \bar ν_μ)$' )
-
-
-# Plot(R_LED, L, max_flux_energy_nue, 'e', 'mu', r'$ν_e$', r'$ν_μ$' )
-# Plot(R_LED, L, max_flux_energy_numu, 'mu', 'e', r'$ν_μ$', r'$ν_e$' )
-
-
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
-
-def probability_NH(a,  Energy, alpha, beta):
+#The units of L are changed from meters to eV-1 here
+def probability_NH(a,  Energy, alpha, beta, L):
+    L = L/conversion_factor_m_to_eV
     eigenvalues_NH, eigenvectors_NH = find_eigen(NH_dict, a)
     probability_NH = Probability(Amplitude(alpha, beta, L, Energy, a, eigenvalues_NH, eigenvectors_NH)) 
     return probability_NH 
         
 
-def probability_IH(a,  Energy, alpha, beta):
+def probability_IH(a,  Energy, alpha, beta, L):
+    L = L/conversion_factor_m_to_eV
     eigenvalues_IH, eigenvectors_IH = find_eigen(IH_dict, a)
     probability_IH = Probability(Amplitude(alpha, beta, L, Energy, a, eigenvalues_IH, eigenvectors_IH)) 
     return probability_IH 

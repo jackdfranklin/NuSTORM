@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 import flux
 import cross_section
-import Machado
+#import Machado
 
 L = 2920 #meters
 
@@ -26,37 +26,36 @@ class ProtoDuneLike(Experiment):
         #self.length = length #Length of detector volume in cm
         #self.area = (50*50)**2 #Area of face of detector volume in cm^2
         #self.volume = self.length*self.area #in cm^3
-        self.volume = 7.2*6.1*7*10**6 #cm^3
+        #self.volume = 7.2*6.1*7*10**6 #cm^3
+        self.volume = 50*50*100*10**6 #cm^3
 
         self.flux_dict = { #Store flux instances in a dictionary. Naming convention is nu/nubar for neutrino/antineutrino, followed by the flavour (e,mu,tau)
-            "nubar_mu": flux.Flux("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/fluxes/E6spectraMuSig557Numu.txt", L),
-            "nu_e": flux.Flux("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/fluxes/E6spectraMuSig557Nue.txt", L)
+            "nubar_mu": flux.Flux("../resources/fluxes/E6spectraMuSig557Numu.txt", L),
+            "nu_e": flux.Flux("../resources/fluxes/E6spectraMuSig557Nue.txt", L)
         }
 
+        directory = "../resources/cross_sections/"
+
         self.cross_sec_dict = { #Store a cross section object for each flavour of neutrino
-            "nubar_mu_Ar": cross_section.Cross_Section("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/cross_sections/numu_Ar_xsec.txt"), #REPLACE WITH NUBAR_MU CROSS SECTIONS WHEN AVAILABLE
-            #"nubar_mu_e":
-            "nu_e_Ar": cross_section.Cross_Section("/Users/athinavogiatzi/Documents/level 4/project/nustorm/resources/cross_sections/nue_Ar_xsec.txt"),
-            #"nu_e_e":
+            "nubar_mu_Ar": cross_section.Cross_Section(directory + "nu_mu_bar_Ar40.csv"),
+            "nu_e_Ar": cross_section.Cross_Section(directory + "nu_e_Ar40.csv")
         } 
 
         LAr_density = 1.38 #g cm^-3, density at 124kPa
-        self.target_mass = self.volume*LAr_density
+        self.target_mass = 100*10**6 #self.volume*LAr_density
         self.N_Ar = self.target_mass/40 * 6.022*10**23  #Number of Argon atoms in the detector mass/m_r *Avogadro
         self.N_e = 18*self.N_Ar #Number of electrons 
         self.N_p = self.N_e #Number of protons 
-        self.N_N = 22*self.N_Ar #Number of neutrons
-        self.N_targets =  self.N_p + self.N_N
+        self.N_n = 22*self.N_Ar #Number of neutrons
+        self.N_targets =  self.N_p + self.N_n
 
     
     #Events for standard model
-    def get_events_nubar_mu(self, POT):
+    def get_Ar_events_nu_mu_bar(self, POT):
 
-        Emin = 0.3
-        Emax = 5.5 #20
         flux = self.flux_dict["nubar_mu"]   
         cross_section = self.cross_sec_dict["nubar_mu_Ar"]
-        events = integrate.quad(lambda E: flux.diff_flux(E)*cross_section.total_cross_section(E), Emin, Emax)[0]*POT*self.N_targets
+        events = self.N_Ar*POT*flux.get_flux()*cross_section.total_cross_section()
         return events
     
     def get_events_nu_e(self, POT):

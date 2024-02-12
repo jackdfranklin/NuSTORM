@@ -1,20 +1,18 @@
 import numpy as np
+import pandas as pd
 from scipy import interpolate
 
 class Cross_Section:
 
     def __init__(self, cross_section_file):
 
-        raw_data = np.loadtxt(cross_section_file, skiprows=3)
+        #Read table in as dataframe
+        df = pd.read_csv(cross_section_file, header=0, index_col=0)
 
         #Store values of energy midpoints and integrated cross section(s)
-        self.energies = raw_data[:,0]
-        self.CC_cross_section = raw_data[:,1]*1e-38
-        self.NC_cross_section = raw_data[:,2]*1e-38
-
-        #Interpolate cross sections
-        self.interp_CC = interpolate.UnivariateSpline(self.energies, self.CC_cross_section)
-        self.interp_NC = interpolate.UnivariateSpline(self.energies, self.NC_cross_section)
+        self.energies = df["bins"].to_numpy()
+        self.CC_cross_section = df["tot_cc"].to_numpy()
+        self.NC_cross_section = df["tot_nc"].to_numpy()
 
         #Dictionary to keep track of units
         self.units = {
@@ -22,48 +20,35 @@ class Cross_Section:
             "Cross Section":"cm^2 nucleus^-1"
         } 
 
-    def total_cross_section(self, nu_energy):
-        '''Returns the total cross section (CC + NC) at the given energy
+    def total_cross_section(self):
+        '''Returns the total cross section (CC + NC) array
 
-        Parameters
-        ----------
-        nu_energy: float or numpy.ndarray
-                The neutrino energy or energies that the cross section will be evaluated at
+        Returns
+        -------
+        cross_section: numpy.ndarray
+        '''
+        return self.CC_cross_section + self.NC_cross_section()
+
+    def CC_cross_section(self):
+        '''Returns the CC cross section
         
         Returns
         -------
-        cross_section: float or numpy.ndarray
+        cross_section: numpy.ndarray
         '''
-        return self.interp_CC(nu_energy) + self.interp_NC(nu_energy)
 
-    def CC_cross_section(self, nu_energy):
-        '''Returns the CC cross section at the given energy
-        Parameters
-        ----------
-        nu_energy: float or numpy.ndarray
-                The neutrino energy or energies that the cross section will be evaluated at
+        return self.CC_cross_section
+
+
+    def NC_cross_section(self):
+        '''Returns the NC cross section
         
         Returns
         -------
-        cross_section: float or numpy.ndarray
+        cross_section: numpy.ndarray
         '''
 
-        return self.interp_CC(nu_energy)
-
-
-    def NC_cross_section(self, nu_energy):
-        '''Returns the NC cross section at the given energy
-        Parameters
-        ----------
-        nu_energy: float or numpy.ndarray
-                The energy or energies that the cross section will be evaluated at
-        
-        Returns
-        -------
-        cross_section: float or numpy.ndarray
-        '''
-
-        return self.interp_NC(nu_energy)
+        return self.NC_cross_section
 
 class Electron_Scattering(Cross_Section):
 

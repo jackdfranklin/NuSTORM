@@ -10,9 +10,12 @@ class Cross_Section:
         df = pd.read_csv(cross_section_file, header=0, index_col=0)
 
         #Store values of energy midpoints and integrated cross section(s)
-        self.energies = df["bins"].to_numpy()
-        self.CC_cross_section = df["tot_cc"].to_numpy()
-        self.NC_cross_section = df["tot_nc"].to_numpy()
+        self.energies = df["bins"].loc[(df["bins"] >= 0.03) & (df["bins"] <= 5.97)][::6].to_numpy()
+        CC_cross_section = df["tot_cc"].loc[(df["bins"] >= 0.03) & (df["bins"] <= 5.97)].to_numpy()
+        self.CC_cross_section = np.add.reduceat(CC_cross_section, np.arange(0, CC_cross_section.size, 6))/6
+
+        NC_cross_section = df["tot_nc"].loc[(df["bins"] >= 0.03) & (df["bins"] <= 5.97)].to_numpy()
+        self.NC_cross_section = np.add.reduceat(NC_cross_section, np.arange(0, NC_cross_section.size, 6))/6
 
         #Dictionary to keep track of units
         self.units = {
@@ -27,7 +30,7 @@ class Cross_Section:
         -------
         cross_section: numpy.ndarray
         '''
-        return self.CC_cross_section + self.NC_cross_section()
+        return self.CC_cross_section + self.NC_cross_section
 
     def CC_cross_section(self):
         '''Returns the CC cross section

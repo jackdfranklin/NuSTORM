@@ -30,8 +30,8 @@ class ProtoDuneLike(Experiment):
         self.volume = 50*50*100*10**6 #cm^3
 
         self.flux_dict = { #Store flux instances in a dictionary. Naming convention is nu/nubar for neutrino/antineutrino, followed by the flavour (e,mu,tau)
-            "nubar_mu": flux.Flux("../resources/fluxes/E6spectraMuSig557Numu.txt", L),
-            "nu_e": flux.Flux("../resources/fluxes/E6spectraMuSig557Nue.txt", L)
+            "nubar_mu": flux.Flux("../resources/fluxes/E5spectraMuSig558Numu.txt", L),
+            "nu_e": flux.Flux("../resources/fluxes/E5spectraMuSig558Nue.txt", L)
         }
 
         directory = "../resources/cross_sections/"
@@ -43,7 +43,7 @@ class ProtoDuneLike(Experiment):
 
         LAr_density = 1.38 #g cm^-3, density at 124kPa
         self.target_mass = 100*10**6 #self.volume*LAr_density
-        self.N_Ar = self.target_mass/40 * 6.022*10**23  #Number of Argon atoms in the detector mass/m_r *Avogadro
+        self.N_Ar = self.target_mass/39.948 * 6.022*10**23  #Number of Argon atoms in the detector mass/m_r *Avogadro
         self.N_e = 18*self.N_Ar #Number of electrons 
         self.N_p = self.N_e #Number of protons 
         self.N_n = 22*self.N_Ar #Number of neutrons
@@ -55,7 +55,15 @@ class ProtoDuneLike(Experiment):
 
         flux = self.flux_dict["nubar_mu"]   
         cross_section = self.cross_sec_dict["nubar_mu_Ar"]
-        events = self.N_Ar*POT*flux.get_flux()*cross_section.total_cross_section()
+        events = self.N_Ar*POT*flux.get_flux()*cross_section.CC_cross_section
+        return events
+
+    #Events for standard model
+    def get_Ar_events_nu_e(self, POT):
+
+        flux = self.flux_dict["nu_e"]   
+        cross_section = self.cross_sec_dict["nu_e_Ar"]
+        events = self.N_Ar*POT*flux.get_flux()*cross_section.CC_cross_section
         return events
     
     def get_events_nu_e(self, POT):

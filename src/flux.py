@@ -5,12 +5,12 @@ from scipy import interpolate
 
 class Flux:
 
-    '''Handler class which contains the raw flux data and an interpolated differential flux'''
+    '''Handler class which contains the raw flux data'''
 
-    def __init__(self, flux_file, L):
-        '''Initialises object with energy midpoints and fluxes from given flux file, then calculates
-        and interpolates the differential flux'''
+    def __init__(self, flavour, flux_file):
+        '''Initialises object with energy midpoints and fluxes from given flux file'''
 
+        self.flavour = flavour
         #Load flux file into dataframe
         raw_data = np.loadtxt(flux_file, skiprows=1)
 
@@ -18,13 +18,12 @@ class Flux:
         self.energies = raw_data[:,0]
         self.int_flux = raw_data[:,1]
 
-        self.deltaE = 0.06
+        self.deltaE = self.energies[1]-self.energies[0]
 
         #Dictionary to keep track of units
         self.units = {
             "Energy":"GeV",
-            "Integrated Flux":"cm^-2 POT^-1",
-            "Differential Flux":"cm^-2 GeV^-1 POT^-1"}
+            "Integrated Flux":"cm^-2 POT^-1"}
 
     def get_flux(self):
 
@@ -36,11 +35,11 @@ class Flux:
         print(self.units)
 
 #L is given in meters and converted to cm in the __init__ function
-class Moved_Flux:
+class Moved_Flux(Flux):
 
     '''Handler class which contains the raw flux data and an interpolated differential flux'''
 
-    def __init__(self, flux_file, L):
+    def __init__(self, flavour, flux_file, L):
         '''Initialises object with energy midpoints and fluxes from given flux file, then calculates
         and interpolates the differential flux'''
         #Distance from detector

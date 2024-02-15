@@ -23,16 +23,25 @@ class Cross_Section:
             "Cross Section":"cm^2 nucleus^-1"
         } 
 
-    def total_cross_section(self):
+    def get_cross_section(self, energies, cross_sections):
+        '''Aligns cross section array to energy bins, averages if bin width smaller than that of energies'''
+
+        aligned_cross_sections = cross_sections[(self.energies>=energies[0])&(self.energies<=energies[-1])] #Only look at bins within valid range
+        
+        bin_width_ratio = aligned_cross_sections/cross_sections
+
+        return np.add.reduceat(aligned_cross_sections, np.arange(0, aligned_cross_sections.size, bin_width_ratio))/bin_width_ratio #Averages over valid bin width
+
+    def total_cross_section(self, energies):
         '''Returns the total cross section (CC + NC) array
 
         Returns
         -------
         cross_section: numpy.ndarray
         '''
-        return self.CC_cross_section + self.NC_cross_section
+        return self.get_cross_section(energies, self.CC_cross_section + self.NC_cross_section)
 
-    def CC_cross_section(self):
+    def CC_cross_section(self, energies):
         '''Returns the CC cross section
         
         Returns
@@ -40,10 +49,10 @@ class Cross_Section:
         cross_section: numpy.ndarray
         '''
 
-        return self.CC_cross_section
+        return self.get_cross_section(energies, self.CC_cross_section)
 
 
-    def NC_cross_section(self):
+    def NC_cross_section(self, energies):
         '''Returns the NC cross section
         
         Returns
@@ -51,7 +60,7 @@ class Cross_Section:
         cross_section: numpy.ndarray
         '''
 
-        return self.NC_cross_section
+        return self.get_cross_section(energies, self.NC_cross_section)
 
 class Electron_Scattering(Cross_Section):
 

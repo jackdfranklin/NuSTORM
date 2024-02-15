@@ -21,7 +21,7 @@ class Experiment:
      
 class ProtoDuneLike(Experiment):
     
-    def __init__(self):
+    def __init__(self, neutrino_flux):
 
         #self.length = length #Length of detector volume in cm
         #self.area = (50*50)**2 #Area of face of detector volume in cm^2
@@ -29,10 +29,7 @@ class ProtoDuneLike(Experiment):
         #self.volume = 7.2*6.1*7*10**6 #cm^3
         self.volume = 50*50*100*10**6 #cm^3
 
-        self.flux_dict = { #Store flux instances in a dictionary. Naming convention is nu/nubar for neutrino/antineutrino, followed by the flavour (e,mu,tau)
-            "nubar_mu": flux.Flux("../resources/fluxes/E5spectraMuSig558Numu.txt", L),
-            "nu_e": flux.Flux("../resources/fluxes/E5spectraMuSig558Nue.txt", L)
-        }
+        self.flux = neutrino_flux
 
         directory = "../resources/cross_sections/"
 
@@ -51,32 +48,27 @@ class ProtoDuneLike(Experiment):
 
     
     #Events for standard model
-    def get_Ar_events_nu_mu_bar(self, POT):
+    def get_tot_Ar_events(self, POT):
 
-        flux = self.flux_dict["nubar_mu"]   
-        cross_section = self.cross_sec_dict["nubar_mu_Ar"]
-        events = self.N_Ar*POT*flux.get_flux()*cross_section.CC_cross_section
+        cross_section = self.cross_sec_dict[self.flux.flavour]
+        events = self.N_Ar*POT*self.flux.get_flux()*(cross_section.CC_cross_section(self.flux.energies)+cross_section.NC_cross_section(self.flux.energies))
         return events
 
-    #Events for standard model
-    def get_Ar_events_nu_e(self, POT):
+    def get_CC_Ar_events(self, POT):
 
-        flux = self.flux_dict["nu_e"]   
-        cross_section = self.cross_sec_dict["nu_e_Ar"]
-        events = self.N_Ar*POT*flux.get_flux()*cross_section.CC_cross_section
+        cross_section = self.cross_sec_dict[self.flux.flavour]
+        events = self.N_Ar*POT*self.flux.get_flux()*cross_section.CC_cross_section(self.flux.energies)
         return events
-    
-    def get_events_nu_e(self, POT):
 
-        Emin = 0.3
-        Emax = 5.5#20
-        flux = self.flux_dict["nu_e"]   
-        cross_section = self.cross_sec_dict["nu_e_Ar"]
-        events = integrate.quad(lambda E: flux.diff_flux(E)*cross_section.total_cross_section(E), Emin, Emax)[0]*POT*self.N_targets
+    def get_NC_Ar_events(self, POT):
+
+        cross_section = self.cross_sec_dict[self.flux.flavour]
+        events = self.N_Ar*POT*self.flux.get_flux()*cross_section.NC_cross_section(self.flux.energies)
         return events
 
 
     #Events for LED model for surviving neurinos
+    #These should be contained within the flux class ideally
     def get_events_LED_nubar_mu(self, POT, a_LED):
 
         Emin = 0.3

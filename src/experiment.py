@@ -34,8 +34,8 @@ class ProtoDuneLike(Experiment):
         directory = "../resources/cross_sections/"
 
         self.cross_sec_dict = { #Store a cross section object for each flavour of neutrino
-            "nubar_mu_Ar": cross_section.Cross_Section(directory + "nu_mu_bar_Ar40.csv"),
-            "nu_e_Ar": cross_section.Cross_Section(directory + "nu_e_Ar40.csv")
+            "nubar_mu": cross_section.Cross_Section(directory + "nu_mu_bar_Ar40.csv"),
+            "nu_e": cross_section.Cross_Section(directory + "nu_e_Ar40.csv")
         } 
 
         LAr_density = 1.38 #g cm^-3, density at 124kPa

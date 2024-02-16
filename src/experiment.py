@@ -51,7 +51,7 @@ class ProtoDuneLike(Experiment):
     def get_tot_Ar_events(self, POT):
 
         cross_section = self.cross_sec_dict[self.flux.flavour]
-        events = self.N_Ar*POT*self.flux.get_flux()*(cross_section.CC_cross_section(self.flux.energies)+cross_section.NC_cross_section(self.flux.energies))
+        events = self.N_Ar*POT*self.flux.get_flux()*(cross_section.tot_cross_section(self.flux.energies))
         return events
 
     def get_CC_Ar_events(self, POT):

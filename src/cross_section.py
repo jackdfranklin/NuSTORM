@@ -10,12 +10,10 @@ class Cross_Section:
         df = pd.read_csv(cross_section_file, header=0, index_col=0)
 
         #Store values of energy midpoints and integrated cross section(s)
-        self.energies = df["bins"].loc[(df["bins"] >= 0.03) & (df["bins"] <= 5.97)][::6].to_numpy()
-        CC_cross_section = df["tot_cc"].loc[(df["bins"] >= 0.03) & (df["bins"] <= 5.97)].to_numpy()
-        self.CC_cross_section = np.add.reduceat(CC_cross_section, np.arange(0, CC_cross_section.size, 6))/6
+        self.energies = df["bins"].to_numpy()
+        self._CC_cross_section = df["tot_cc"].to_numpy()
 
-        NC_cross_section = df["tot_nc"].loc[(df["bins"] >= 0.03) & (df["bins"] <= 5.97)].to_numpy()
-        self.NC_cross_section = np.add.reduceat(NC_cross_section, np.arange(0, NC_cross_section.size, 6))/6
+        self._NC_cross_section = df["tot_nc"].to_numpy()
 
         #Dictionary to keep track of units
         self.units = {
@@ -28,8 +26,7 @@ class Cross_Section:
 
         aligned_cross_sections = cross_sections[(self.energies>=energies[0])&(self.energies<=energies[-1])] #Only look at bins within valid range
         
-        bin_width_ratio = aligned_cross_sections/cross_sections
-
+        bin_width_ratio = int(round((energies[1]-energies[0])/(self.energies[1]-self.energies[0]))) #Assumes bin width of cross sections <= bin width of fluxes
         return np.add.reduceat(aligned_cross_sections, np.arange(0, aligned_cross_sections.size, bin_width_ratio))/bin_width_ratio #Averages over valid bin width
 
     def total_cross_section(self, energies):
@@ -39,7 +36,7 @@ class Cross_Section:
         -------
         cross_section: numpy.ndarray
         '''
-        return self.get_cross_section(energies, self.CC_cross_section + self.NC_cross_section)
+        return self.get_cross_section(energies, self._CC_cross_section + self._NC_cross_section)
 
     def CC_cross_section(self, energies):
         '''Returns the CC cross section
@@ -49,7 +46,7 @@ class Cross_Section:
         cross_section: numpy.ndarray
         '''
 
-        return self.get_cross_section(energies, self.CC_cross_section)
+        return self.get_cross_section(energies, self._CC_cross_section)
 
 
     def NC_cross_section(self, energies):
@@ -60,7 +57,7 @@ class Cross_Section:
         cross_section: numpy.ndarray
         '''
 
-        return self.get_cross_section(energies, self.NC_cross_section)
+        return self.get_cross_section(energies, self._NC_cross_section)
 
 class Electron_Scattering(Cross_Section):
 

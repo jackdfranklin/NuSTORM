@@ -29,7 +29,11 @@ R_LED = R_LED_/conversion_factor_μm_to_eV
 
 #Length in m to eV^-1
 conversion_factor_m_to_eV = 1.9732705*10**(-7)
-L = 3000/conversion_factor_m_to_eV
+L_1km = 1000/conversion_factor_m_to_eV
+L_500m = 500/conversion_factor_m_to_eV
+L_200m = 200/conversion_factor_m_to_eV
+
+
 
 
 
@@ -318,9 +322,9 @@ print(max_flux_energy_nue)
 max_flux_energy_numu = max_flux_energy_numu*10**9
 max_flux_energy_nue = max_flux_energy_nue*10**9
 
-
-Plot(R_LED, L, max_flux_energy_nue, 'e', 'e', r'$P(ν_e \rightarrow ν_e)$' )
-Plot(R_LED, L, max_flux_energy_numu, 'mu', 'mu', r'$P(\bar ν_μ \rightarrow \bar ν_μ)$' )
+#Give L: 200, 500, 1000
+# Plot(R_LED, L, max_flux_energy_nue, 'e', 'e', r'$P(ν_e \rightarrow ν_e)$' )
+# Plot(R_LED, L, max_flux_energy_numu, 'mu', 'mu', r'$P(\bar ν_μ \rightarrow \bar ν_μ)$' )
 
 
 # Plot(R_LED, L, max_flux_energy_nue, 'e', 'mu', r'$ν_e$', r'$ν_μ$' )
@@ -329,13 +333,13 @@ Plot(R_LED, L, max_flux_energy_numu, 'mu', 'mu', r'$P(\bar ν_μ \rightarrow \ba
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def probability_NH(a,  Energy, alpha, beta):
+def probability_NH(a,  Energy, alpha, beta, L):
     eigenvalues_NH, eigenvectors_NH = find_eigen(NH_dict, a)
     probability_NH = Probability(Amplitude(alpha, beta, L, Energy, a, eigenvalues_NH, eigenvectors_NH)) 
     return probability_NH 
         
 
-def probability_IH(a,  Energy, alpha, beta):
+def probability_IH(a,  Energy, alpha, beta, L):
     eigenvalues_IH, eigenvectors_IH = find_eigen(IH_dict, a)
     probability_IH = Probability(Amplitude(alpha, beta, L, Energy, a, eigenvalues_IH, eigenvectors_IH)) 
     return probability_IH 

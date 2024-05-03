@@ -9,8 +9,15 @@ ___
 ### Layout of the code:
 
 * src
+    - experiment.py
+    - flux.py
+    - cross_section.py 
 * analysis
+    - LED
+    - ThetaW
 * resources
+    - fluxes
+    - cross_sections
 * tests
 ___
  

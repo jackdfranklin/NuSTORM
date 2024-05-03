@@ -8,6 +8,10 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 from mpl_toolkits.mplot3d import Axes3D
 import pandas as pd
 
+import sys
+import os
+sys.path.append(os.path.abspath("../src"))
+
 import flux
 import cross_section
 import Machado_chi_squared_L_LED_L as Machado

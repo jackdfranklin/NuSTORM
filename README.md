@@ -8,21 +8,33 @@ ___
 
 ### Layout of the code:
 
-*src
-	-flux.py
-	-cross_sections.py
-    
-*resources
-	-fluxes
-	-cross_sections
-
-*tests
-	-flux_test.py
-
-*analysis
-    -LED
-    -ThetaW
-
+``` bash
+│       
+├── src
+│       
+├── tests
+│       
+└── resources
+    ├── cross_sections
+    │   
+    └── fluxes
+       
+```
 ___
  
+### Naming Conventions
 
+When naming classes, use capitalised words with snake case, i.e.:
+
+```python
+class Example_Class:
+
+
+```
+
+Similarly for functions/methods and variables, use snake case but with no capitalisation:
+
+```python
+def function_example(example_parameter):
+    #do stuff here
+```

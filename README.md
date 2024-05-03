@@ -8,18 +8,10 @@ ___
 
 ### Layout of the code:
 
-``` bash
-│       
-├── src
-│       
-├── tests
-│       
-└── resources
-    ├── cross_sections
-    │   
-    └── fluxes
-       
-```
+* src
+* analysis
+* resources
+* tests
 ___
  
 ### Naming Conventions

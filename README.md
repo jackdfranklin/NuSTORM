@@ -8,18 +8,18 @@ ___
 
 ### Layout of the code:
 
--src
+*src
 	-flux.py
 	-cross_sections.py
     
--resources
+*resources
 	-fluxes
 	-cross_sections
 
--tests
+*tests
 	-flux_test.py
 
--analysis
+*analysis
     -LED
     -ThetaW
 
